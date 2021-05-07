@@ -24,6 +24,7 @@
 			<view class="u-text-center u-padding-top-10 u-padding-bottom-20 tips">收款键盘</view>
 		</view>
 	</u-keyboard>
+	<u-top-tips ref="uTips"></u-top-tips>
 </view>
 </template>
 
@@ -48,7 +49,6 @@
 		onLoad() {
 		},
 		onReady() {
-			console.log(parseTime(new Date,'{y}{m}{d}{h}{i}{s}{n}'),123465);
 		},
 		methods: {
 			onChange(val){
@@ -69,6 +69,7 @@
                     scanType: ['qrCode'],
 					onlyFromCamera: true,
                     success:(res) =>{
+						this.show = false;
 						this.aopF2F(res.result )
                     }
                 });
@@ -84,17 +85,25 @@
 					method = 'wechat'
 				}
 				const totalAmount = this.totalAmount * 100
-				const order = {
-					authCode: code,
-					method: method,
-					operatorId: "",
-					orderNo: parseTime(new Date,'{y}{m}{d}{h}{i}{s}{n}'),
-					storeName: this.username,
-					terminalId: "",
-					title: this.name,
-					totalAmount: totalAmount,
+				if (method) {
+					const order = {
+						authCode: code,
+						method: method,
+						operatorId: "",
+						orderNo: parseTime(new Date,'{y}{m}{d}{h}{i}{s}{n}'),
+						storeName: this.username,
+						terminalId: "",
+						title: this.name,
+						totalAmount: totalAmount,
+					}
+					console.log(order);
+				}else{
+					this.$refs.uTips.show({
+						duration: 5000,
+						title: "不支持此付款方式",
+						type: 'error'
+					});
 				}
-				console.log(order);
 			}
 		}
 	}

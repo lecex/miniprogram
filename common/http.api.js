@@ -17,11 +17,12 @@ const install = (Vue, vm) => {
 	// 涩会登录注册
 	let SocialitesRegister = (params = {}) => vm.$u.post('/socialite-api/socialites/register', params);
 
-	/**
-	 * sql2000
-	 */
-	let DepartmentSale = (params = {}) => vm.$u.post('/sql2000-api/department/sale', params);
-	let GetGoods = (params = {}) => vm.$u.post('/sql2000-api/items/get', params);
+	// 支付收款
+	let PaysAopF2F = (params = {}) => vm.$u.post('/pay-api/pays/aopF2F', params); 
+	let OrdersSelfList = (params = {}) => vm.$u.post('/pay-api/orders/selfList', params); 
+	let OrdersSelfAmount = (params = {}) => vm.$u.post('/pay-api/orders/selfAmount', params); 
+	let OrdersSelfFee = (params = {}) => vm.$u.post('/pay-api/orders/selfFee', params); 
+
 	// 将各个定义的接口名称，统一放进对象挂载到vm.$u.api(因为vm就是this，也即this.$u.api)下
 	vm.$u.api = { 
 		Auth, 
@@ -33,8 +34,11 @@ const install = (Vue, vm) => {
 		SocialitesAuth,
 		SocialitesRegister,
 
-		DepartmentSale,
-		GetGoods
+		PaysAopF2F,
+		OrdersSelfList,
+		OrdersSelfAmount,
+		OrdersSelfFee,
+		
 	};
 }
 
