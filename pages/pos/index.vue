@@ -52,8 +52,16 @@
 		},
 		methods: {
 			onChange(val){
-				this.totalAmount += val;
-				this.totalAmount = this.totalAmount.match(/^\d+(?:\.\d{0,2})?/)[0]
+				if (Number(this.totalAmount + val)<100000) {
+					this.totalAmount += val;
+					this.totalAmount = this.totalAmount.match(/^\d+(?:\.\d{0,2})?/)[0]
+				}else{
+					this.$refs.uTips.show({
+						duration: 5000,
+						title: "不允许大于10万元",
+						type: 'warning'
+					});
+				}
 			},
 			onBackspace(e){
 				if(this.totalAmount.length>0){
@@ -65,18 +73,26 @@
 				this.show = flag;
 			},
 			onConfirm(){
-				uni.scanCode({
-                    scanType: ['qrCode'],
-					onlyFromCamera: true,
-                    success:(res) =>{
-						this.show = false;
-						this.aopF2F(res.result )
-                    }
-                });
+				if (Number(this.totalAmount)>0) {
+					uni.scanCode({
+						scanType: ['qrCode'],
+						onlyFromCamera: true,
+						success:(res) =>{
+							this.show = false
+							this.aopF2F(res.result )
+						}
+					});
+				}else{
+					this.$refs.uTips.show({
+						duration: 5000,
+						title: "请输入收款金额",
+						type: 'warning'
+					});
+				}
 			},
 			aopF2F(code){
+				let method = null
 				const regAlipay = /^(?:2[5-9]|30)\d{14,18}$/
-				const method = null
 				if (regAlipay.test(code)) { // 支付宝支付
 					method = 'alipay'
 				}
@@ -96,6 +112,11 @@
 						title: this.name,
 						totalAmount: totalAmount,
 					}
+					this.$u.api.PaysAopF2F(order).then(res=>{
+						console.log(res);
+					}).catch(err=>{
+						console.log(err);
+					})
 					console.log(order);
 				}else{
 					this.$refs.uTips.show({
