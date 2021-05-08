@@ -33,6 +33,9 @@
 		},
 		onReady() {
 		},
+		onReachBottom(){
+			this.$store.dispatch('onReachBottom')
+        },
 		methods: {
 			init() {
 				if (!uni.getStorageSync('token')) {

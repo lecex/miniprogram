@@ -1,19 +1,19 @@
 <template>
 <view>
-	<view>
-		<view class="content">
-			<view class="text-area-branch">
-				<text class="title">测试</text>
-			</view>
+	<view class="content">
+		<view class="text-area-branch">
 		</view>
 	</view>
+	<order-list/>
 </view>
 </template>
 
 <script>
 	import {  mapGetters } from 'vuex'
+	import orderList from '@/pages/order/list.vue'
 	export default {
 		components: { 
+			orderList
 		},	
 		computed: {
 		...mapGetters([

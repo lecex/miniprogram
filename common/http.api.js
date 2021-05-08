@@ -18,8 +18,9 @@ const install = (Vue, vm) => {
 	let SocialitesRegister = (params = {}) => vm.$u.post('/socialite-api/socialites/register', params);
 
 	// 支付收款
-	let PaysAopF2F = (params = {}) => vm.$u.post('/pay-api/pays/aopF2F', params); 
-	let OrdersSelfList = (params = {}) => vm.$u.post('/pay-api/orders/selfList', params); 
+	let PaysAopF2F = (params = {}) => vm.$u.post('/pay-api/pays/aopF2F', {order:params}); 
+	let PaysQuery = (params = {}) => vm.$u.post('/pay-api/pays/query', {order:params}); 
+	let OrdersSelfList = (params = {}) => vm.$u.post('/pay-api/orders/selfList', {list_query:params}); 
 	let OrdersSelfAmount = (params = {}) => vm.$u.post('/pay-api/orders/selfAmount', params); 
 	let OrdersSelfFee = (params = {}) => vm.$u.post('/pay-api/orders/selfFee', params); 
 
@@ -35,6 +36,7 @@ const install = (Vue, vm) => {
 		SocialitesRegister,
 
 		PaysAopF2F,
+		PaysQuery,
 		OrdersSelfList,
 		OrdersSelfAmount,
 		OrdersSelfFee,

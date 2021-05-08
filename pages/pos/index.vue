@@ -1,5 +1,15 @@
 <template>
 <view>
+	<view v-if="state!=='close'" class="u-text-center u-padding-20 state">
+		<view>
+			<u-icon v-if="order.method==='alipay'" name="zhifubao" size="80" color="#409EFF"></u-icon>
+			<u-icon v-if="order.method==='wechat'" name="weixin-fill" size="80" color="#67C23A"></u-icon>
+		</view>
+		<u-icon v-if="state=='wait'" name="more-dot-fill" size="120" color="#E6A23C"></u-icon>
+		<u-icon v-if="state=='success'" name="checkbox-mark" size="120" color="#67C23A"></u-icon>
+		<u-icon v-if="state=='error'" name="close" size="120" color="#F56C6C"></u-icon>
+		<view v-if="order.totalAmount>0">¥ {{(order.totalAmount/100).toFixed(2)}} 元</view>
+	</view>
 	<u-keyboard 
 		default=""
 		ref="uKeyboard" 
@@ -15,7 +25,7 @@
 		@backspace="onBackspace">
 		<view>
 			<view class="u-text-center u-padding-20 money">
-				<text>{{totalAmount}}</text>
+				<text>{{Number(totalAmount)}}</text>
 				<text class="u-font-20 u-padding-left-10">元</text>
 				<view class="u-padding-10 close" data-flag="false" @tap="showPop(false)">
 					<u-icon name="close" color="#333333" size="28"></u-icon>
@@ -31,13 +41,19 @@
 <script>
 	import {  mapGetters } from 'vuex'
 	import { parseTime }  from '@/utils'
+	import utilsPay from '@/utils/pay'
 	export default {
 		components: { 
 		},
 		data() {
 			return {
 				totalAmount:'',
-				show:true
+				show:true,
+				query:true,
+				order:{
+					totalAmount:0
+				},
+				state: 'close'
 			}
 		},
 		computed: {
@@ -78,8 +94,8 @@
 						scanType: ['qrCode'],
 						onlyFromCamera: true,
 						success:(res) =>{
-							this.show = false
-							this.aopF2F(res.result )
+							this.aopF2F(res.result, this.totalAmount * 100)
+							this.showPop(false)
 						}
 					});
 				}else{
@@ -90,7 +106,7 @@
 					});
 				}
 			},
-			aopF2F(code){
+			async aopF2F(code, totalAmount){
 				let method = null
 				const regAlipay = /^(?:2[5-9]|30)\d{14,18}$/
 				if (regAlipay.test(code)) { // 支付宝支付
@@ -100,9 +116,8 @@
 				if (regWechat.test(code)) { // 微信支付
 					method = 'wechat'
 				}
-				const totalAmount = this.totalAmount * 100
 				if (method) {
-					const order = {
+					this.order = {
 						authCode: code,
 						method: method,
 						operatorId: "",
@@ -112,12 +127,11 @@
 						title: this.name,
 						totalAmount: totalAmount,
 					}
-					this.$u.api.PaysAopF2F(order).then(res=>{
-						console.log(res);
-					}).catch(err=>{
-						console.log(err);
+					uni.showLoading({
+						title:'支付中'
 					})
-					console.log(order);
+					await this.$u.api.PaysAopF2F(this.order)
+					this.handerPayQuery()
 				}else{
 					this.$refs.uTips.show({
 						duration: 5000,
@@ -125,12 +139,74 @@
 						type: 'error'
 					});
 				}
-			}
+			},
+			handerPayQuery() {
+				this.state = 'wait'
+				if(this.query){
+					uni.showLoading({
+						title:'查询中'
+					})
+					this.$u.api.PaysQuery(this.order).then(response => {
+						utilsPay.hander(response, this.order.method)
+						if (utilsPay.valid) {
+							this.state = 'success'
+							uni.showToast({
+								icon:'success',
+								title:'支付成功'
+							})
+						} else {
+							if (utilsPay.error.code === 'USERPAYING') {
+								uni.showLoading({
+									title:'等待用户付款中'
+								})
+								setTimeout(() => {
+									this.handerPayQuery()
+								}, 5 * 1000)// 等待10秒
+							} else {
+								this.$refs.uTips.show({
+									duration: 60*1000,
+									title: utilsPay.error.detail,
+									type: 'error'
+								});
+								this.state = 'error'
+							}
+						}
+
+					}).catch(error => {
+						if (error.message.indexOf('timeout of') !== -1) {
+							uni.showLoading({
+								title:'支付查询超时..'
+							})
+						} else {
+							const detail = error.response.data.detail
+							this.$refs.uTips.show({
+								duration: 5000,
+								title: "查询失败"+detail,
+								type: 'error'
+							});
+						}
+						setTimeout(() => {
+							this.handerPayQuery()
+						}, 5 * 1000)// 等待 5 秒再次查询
+					})
+				}
+			},
+		},
+		destroyed() {
+			this.query = false
+			uni.hideLoading()
 		}
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" >
+	.state{
+		margin-top: 15vh;
+		font-size: 80rpx;
+		color: $u-type-warning;
+		position: relative;
+	}
+
 	.money{
 		font-size: 80rpx;
 		color: $u-type-warning;
