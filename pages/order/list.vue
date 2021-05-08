@@ -9,6 +9,7 @@
                     :arrow="false"
                     :key="index"
                     :icon-style="getItemIconStyle(row.method)"
+                    @click="onPaysQuery(row)"
                 >
                     <span class="total-mount">
                         {{(row.totalAmount/100).toFixed(2)}} 
@@ -34,6 +35,7 @@
 
 <script>
 	import {  mapState } from 'vuex'
+    import utilsPay from '@/utils/pay'
 	export default {
 		components: { 
 		},
@@ -69,9 +71,53 @@
                     page: this.page,
                     sort: "created_at desc",
                 }).then(res =>{
-                    this.orders = this.orders.concat(res.orders)
+                    if (res.orders) {
+                        this.orders = this.orders.concat(res.orders)
+                    }
                     this.total = Number(res.total)
                 })
+            },
+            onPaysQuery(order){
+                this.$u.api.PaysQuery({
+                    orderNo:order.orderNo,
+                    storeId: order.storeId,
+                }).then(response => {
+						utilsPay.hander(response, order.method)
+						if (utilsPay.valid) {
+                            this.orders = []
+                            this.page = 1
+                            this.getOrder()
+                             setTimeout(function () {
+                                uni.showToast({
+                                    duration: 5000,
+                                    icon:'success',
+                                    title:'支付成功',
+                                })
+                            }, 500);
+						} else {
+							if (utilsPay.error.code === 'USERPAYING') {
+								uni.showToast({
+                                    duration: 5000,
+                                    icon:'warning',
+                                    title:'等待用户付款'
+                                })
+							} else {
+                                uni.showToast({
+                                    duration: 5000,
+                                    icon:'error',
+                                    title:utilsPay.error.detail
+                                })
+							}
+						}
+
+				}).catch(error => {
+                    console.log(error);
+					uni.showToast({
+                        duration: 5000,
+						icon:'error',
+						title:'查询失败'
+					})
+				})
             },
             getItemIcon(method) {
                 let icon = ''
