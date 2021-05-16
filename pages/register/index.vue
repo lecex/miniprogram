@@ -29,8 +29,8 @@
 			</view>
 			<view class="hint">
 				登录代表同意
-				<text class="link">新世纪用户协议、隐私政策，</text>
-				并授权使用您的新世纪账号信息（如昵称、头像、收获地址）以便您统一管理
+				<text class="link">安安POS用户协议、隐私政策，</text>
+				并授权使用您的安安POS账号信息（如昵称、头像、收获地址）以便您统一管理
 			</view>
 		</view>
 	</view>
