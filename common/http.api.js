@@ -5,6 +5,7 @@
 const install = (Vue, vm) => {
 	// 此处使用了传入的params参数，一切自定义即可
 	let Auth = (params = {}) => vm.$u.post('/user-api/auth/auth', params);
+	let MobileAuth = (params = {}) => vm.$u.post('/user-api/auth/mobile', params);
 	// 此处使用了传入的params参数，一切自定义即可
 	let UserInfo = (params = {}) => vm.$u.post('/user-api/users/info', params);
 	let UserSelfUpdate = (params = {}) => vm.$u.post('/user-api/users/selfUpdate', params);
@@ -27,6 +28,7 @@ const install = (Vue, vm) => {
 	// 将各个定义的接口名称，统一放进对象挂载到vm.$u.api(因为vm就是this，也即this.$u.api)下
 	vm.$u.api = { 
 		Auth, 
+		MobileAuth,
 		UserInfo, 
 		UserSelfUpdate,
 		

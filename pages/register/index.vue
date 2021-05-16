@@ -40,7 +40,7 @@
 export default {
 	data() {
 		return {
-			mobile: '',
+			type: 'register',
 		}
 	},
 	computed: {
@@ -53,6 +53,9 @@ export default {
 			return style;
 		}
 	},
+	onLoad(options) {
+        this.type = options.type
+	},
     mounted() {
     },
 	methods: {
@@ -62,7 +65,7 @@ export default {
 			// #endif
 			if(this.$u.test.mobile(this.mobile)) {
 				this.$u.route({
-					url: 'pages/register/code?mobile='+this.mobile
+					url: 'pages/register/code?type='+this.type+'&mobile='+this.mobile
 				})
 			}
 		}

@@ -4,11 +4,21 @@
 import store from '@/store'
 const login = {
     api : store.state.$u.api,
+    Mobile(mobile,code){
+        return new Promise((resolve, reject) => {
+            this.api.MobileAuth({ user:{
+                mobile: mobile
+            }, captcha: code }).then(res => {
+                resolve(res)
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
     MpWechat() {
         // 微信小程序登录
         return new Promise((resolve, reject) => {
             this.uniLogin('weixin').then(res=>{
-                console.log();
                 if (res.errMsg === "login:ok") {
                     this.socialitesAuth( res.code,'miniprogram_wechat').then(res => {
                         resolve(res)

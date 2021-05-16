@@ -18,8 +18,16 @@ const mutations = {
     state.token = token
   },
   REMOVE_TOKEN: (state) => {
-    removeToken()
-    state.token = ''
+      uni.removeStorageSync("token")
+      state.token = ''
+  },
+  INIT_USER: (state) => {
+    state.username = ''
+    state.name = ''
+    state.userId = ''
+    state.avatar = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
+    state.roles = []
+    state.front_permits = []
   },
   SET_USERNAME: (state, username) => {
     if (username) {
@@ -71,6 +79,16 @@ const actions = {
       // #endif
     })
   },
+  mobileLogin({ commit, state }, options) {
+    return new Promise((resolve, reject) => {
+      const login = require('@/utils/login').default
+      login.Mobile(options.mobile, options.captcha).then(res=>{
+        resolve(res)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  },
   register({ commit, state },options){
     return new Promise((resolve, reject) => {
       const login = require('@/utils/login').default
@@ -115,11 +133,14 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       commit('REMOVE_TOKEN')
-      commit('SET_ROLES')
+      commit('INIT_USER')
+      uni.redirectTo({
+        url: 'pages/index/index'
+      });
       resolve()
     })
   },
-
+  
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {

@@ -18,6 +18,7 @@
 export default {
 	data() {
 		return {
+			type:'register',
             mobile:'',
             showMobile:'',
 			maxlength: 6,
@@ -31,6 +32,7 @@ export default {
 	computed: {},
 	onLoad(options) {
         this.mobile = options.mobile
+		this.type = options.type
         this.showMobile = this.mobile.slice(0,3)+'****'+this.mobile.slice(7,11)
 		this.getCaptcha()
 		let interval = setInterval(() => {
@@ -79,17 +81,32 @@ export default {
 		},
 		// 输入完验证码最后一位执行
 		finish(value) {
-			this.$store.dispatch('user/register',{
-				mobile: this.mobile,
-				captcha: value
-			}).then(res=>{
-				if (res.valid) {
-					this.$u.route({
-						type:'redirectTo',
-						url: 'pages/index/index'
-					})
-				}
-			})
+			if (this.type == 'register'){
+				this.$store.dispatch('user/register',{
+					mobile: this.mobile,
+					captcha: value
+				}).then(res=>{
+					if (res.valid) {
+						this.$u.route({
+							type:'redirectTo',
+							url: 'pages/index/index'
+						})
+					}
+				})
+			}else{
+				this.$store.dispatch('user/mobileLogin',{
+					mobile: this.mobile,
+					captcha: value
+				}).then(res=>{
+					if (res.token) {
+						uni.setStorageSync('token', res.token)
+						this.$u.route({
+							type:'redirectTo',
+							url: 'pages/index/index'
+						})
+					}
+				})
+			}
 		}
 	}
 };

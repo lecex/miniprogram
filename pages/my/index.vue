@@ -50,8 +50,11 @@
 					<u-cell-item icon="setting" :iconStyle="{color:'#455A64'}" title="设置" index="setting" @click="navChange"></u-cell-item>
 				</u-cell-group>
 			</view> -->
-			<view class="u-m-t-20">
+			<view class="u-m-t-20" v-if="username">
 				<button @tap="outLogin">退出登录</button>
+			</view>
+			<view class="u-m-t-20" v-else>
+				<button @tap="login">登录</button>
 			</view>
 		</view>
 	</view>
@@ -81,12 +84,14 @@ export default {
 		
 	},
 	methods: {
-		outLogin(){
-			uni.removeStorageSync("token")
+		login(){
 			this.$u.route({
 				type:'redirectTo',
-				url: 'pages/index/index'
+				url: 'pages/register/index?type=login'
 			})
+		},
+		outLogin(){
+			this.$store.dispatch('user/logout')
 		},
 		navChange(PageCur){
 			this.PageCur = PageCur
