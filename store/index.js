@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import getters from './getters'
 import user from './modules/user'
+import data from './modules/data'
+import wxfaceapp from './modules/wxfaceapp'
 
 Vue.use(Vuex)
 
@@ -28,6 +30,8 @@ const store = new Vuex.Store({
   },
   modules: {
     user,
+    data,
+    wxfaceapp,
   },
   getters
 })

@@ -1,9 +1,15 @@
 {
 	"pages": [
 		{
+			"path": "pages/wxfaceapp/front/index",
+			"style": {
+				"navigationStyle":"custom"  
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "收银"
+				"navigationStyle":"custom"
 			}
 		},
 		{
@@ -16,6 +22,12 @@
 			"path": "pages/register/code",
 			"style": {
 				"navigationBarTitleText": "注册"
+			}
+		},
+		{
+			"path": "pages/wxfaceapp/back/index",
+			"style": {
+				"navigationBarTitleText": "收银台"
 			}
 		}
 	],

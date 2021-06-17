@@ -89,3 +89,12 @@ export function formatTime(time, option) {
         )
     }
 }
+/**
+ * 数字前面自动补零
+ * @param {int} num 数字
+ * @param {int} length 总长度
+ * @returns {string}
+ */
+export function addPreZero(num, length) {
+  return (Array(length).join('0') + num).slice(-length)
+}

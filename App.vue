@@ -18,4 +18,8 @@
 	@import "uview-ui/index.scss";
 	@import "colorui/main.css";
 	@import "colorui/icon.css";
+    
+	.cell-hover-class {
+		opacity: 0.5;
+	}
 </style>
